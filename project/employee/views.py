@@ -79,4 +79,37 @@ class EmployeeUpdateView(APIView):
                 "success": False,
             }
             return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+class EmployeeDeleteView(APIView):
+    def delete(self, request):
+        try:
+            data = request.data
+            input_regid = data.get('regid')
+
+            # Check if required parameters are present
+            if not input_regid:
+                return Response({"message": "Invalid body request", "success": False}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Retrieve the employee instance
+            try:
+                employee_instance = Employee.objects.get(id=input_regid)
+            except Employee.DoesNotExist:
+                return Response({"message": f"No employee found with regid", "success": False}, status=status.HTTP_200_OK)
+
+            # Delete the employee
+            employee_instance.delete()
+
+            response_data = {
+                "message": "Employee deleted successfully",
+                "success": True
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            response_data = {
+                "message": "Employee deletion failed",
+                "success": False
+            }
+            return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
