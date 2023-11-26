@@ -113,3 +113,47 @@ class EmployeeDeleteView(APIView):
             }
             return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+class EmployeeGetView(APIView):
+    def get(self, request):
+        try:
+            params = request.query_params
+            regid = params.get('regid')
+
+            if regid:
+                # Single employee request
+                try:
+                    queryset = Employee.objects.get(id=regid)
+                    serializer = EmployeeSerializer(queryset)
+                    response_data = {
+                        "message": "Employee details found",
+                        "success": True,
+                        "employees": [serializer.data]
+                    }
+                except Employee.DoesNotExist:
+                    response_data = {
+                        "message": "Employee details not found",
+                        "success": False,
+                        "employees": []
+                    }
+            else:
+                # All employee request
+                queryset = Employee.objects.all()
+                serializer = EmployeeSerializer(queryset, many=True)
+                response_data = {
+                    "message": "Employee details found",
+                    "success": True,
+                    "employees": serializer.data
+                }
+
+            return Response(response_data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            response_data = {
+                "message": "Employee retrieval failed",
+                "success": False,
+                "employees": []
+            }
+            return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
