@@ -1,7 +1,8 @@
-from django.db import models
-# from django.contrib.auth.models import AbstractUser
+# models.py
 
-class AddressDetails(models.Model):
+from django.db import models
+
+class Address(models.Model):
     hno = models.CharField(max_length=255)
     street = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
@@ -15,23 +16,26 @@ class WorkExperience(models.Model):
 
 class Qualification(models.Model):
     qualificationName = models.CharField(max_length=255)
+    fromDate = models.CharField(max_length=255)
+    toDate = models.CharField(max_length=255)
     percentage = models.FloatField()
 
 class Project(models.Model):
     title = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
+    description = models.TextField()
 
-class UserModel(models.Model):
+class Employee(models.Model):
     name = models.CharField(max_length=255)
-    email = models.CharField(max_length=255)
+    email = models.EmailField()
     age = models.IntegerField()
     gender = models.CharField(max_length=10)
-    phoneNo = models.CharField(max_length=15, blank=True)
-    addressDetails = models.OneToOneField(AddressDetails, on_delete=models.CASCADE, null=True, blank=True)
+    phoneNo = models.CharField(max_length=15, blank=True, null=True)
+    addressDetails = models.OneToOneField(Address, on_delete=models.CASCADE)
     workExperience = models.ManyToManyField(WorkExperience)
     qualifications = models.ManyToManyField(Qualification)
     projects = models.ManyToManyField(Project)
-    photo = models.TextField(blank=True)  # Assuming Base64 image data is stored as a string
+    photo = models.CharField(max_length=15, blank=True, null=True)
 
-    def __str__(self):
+
+    def __str__(self) -> str:
         return self.name
